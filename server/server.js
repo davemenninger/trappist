@@ -1,32 +1,25 @@
+var path = require('path');
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io').listen(server);
-
+var gamejs = new require('../common/game.js');
 
 app.use('/css',express.static(__dirname+'/css'));
-app.use('/js',express.static(__dirname+'/js'));
+app.use('/client',express.static(path.resolve(__dirname,'../client')));
+app.use('/common',express.static(path.resolve(__dirname,'../common')));
 app.use('/assets',express.static(__dirname+'/assets'));
 
 app.get('/',function(req,res){
-    res.sendFile(__dirname+'/index.html');
+    res.sendFile('index.html', { root: './client'});
 });
 
-// https://en.wikipedia.org/wiki/TRAPPIST-1#Planetary_system
-planets = [
-  { name: "A", speed: 0, radius: 0.00000001 },
-  { name: "B", speed: 24, semimajor_axis: 0.01154775, radius: 1.121 },
-  { name: "C", speed: 15, semimajor_axis: 0.01581512, radius: 1.095 },
-  { name: "D", speed: 9, semimajor_axis: 0.02228038, radius: 0.784 },
-  { name: "E", speed: 6, semimajor_axis: 0.02928285, radius: 0.910 },
-  { name: "F", speed: 4, semimajor_axis: 0.03853361, radius: 1.046 },
-  { name: "G", speed: 3, semimajor_axis: 0.04687692, radius: 1.148 },
-  { name: "H", speed: 2, semimajor_axis: 0.06193488, radius: 0.773 }
-  // { name: "X", speed: 24, radius: 0.1 }
-];
-
-var tick = 1;
 var seconds_per_tick = 10;
+var second = Math.floor(Date.now() / 1000);
+var tick = Math.floor( second / seconds_per_tick );
+var Game = gamejs.Game;
+var game = new Game();
+
 server.lastPlayerID = 0;
 
 server.listen(8081,function(){
@@ -42,8 +35,8 @@ io.on('connection', function(socket) {
         };
         socket.emit('allplayers', getAllPlayers());
         socket.emit('init_map', {
-            tick: tick,
-            planets: planets
+            tick: game.tick,
+            planets: game.planets
         });
         socket.broadcast.emit('newguy', socket.player);
         console.log("stuff");
