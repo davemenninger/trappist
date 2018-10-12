@@ -14,7 +14,7 @@ app.get('/',function(req,res){
     res.sendFile('index.html', { root: './client'});
 });
 
-var seconds_per_tick = 10;
+var seconds_per_tick = 2;
 var second = Math.floor(Date.now() / 1000);
 var tick = Math.floor( second / seconds_per_tick );
 var Game = gamejs.Game;
@@ -27,24 +27,28 @@ server.listen(8081,function(){
 });
 
 io.on('connection', function(socket) {
+
     socket.on('newguy', function() {
         socket.player = {
             id: server.lastPlayerID++,
-            x: randomInt(100, 400),
-            y: randomInt(100, 400),
+            planet: 'B',
         };
-        socket.emit('allplayers', getAllPlayers());
+        //socket.broadcast.emit('allplayers', getAllPlayers());
+        game.add_player({ player: socket.player });
         socket.emit('init_map', {
             tick: game.tick,
-            planets: game.planets
+            planets: game.planets,
+            players: getAllPlayers()
         });
         socket.broadcast.emit('newguy', socket.player);
-        console.log("stuff");
 
         socket.on('click', function(data) {
-            console.log('click to ' + data.x + ', ' + data.y);
-            socket.player.x = data.x;
-            socket.player.y = data.y;
+            console.log( socket.player.id );
+            console.log('click to ' + data.planet.name);
+            game.move_player_to_planet({
+                player: socket.player,
+                planet: data.planet
+            });
             io.emit('move', socket.player);
         });
 

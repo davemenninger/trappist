@@ -13,29 +13,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
     Client.socket.on('init_map', function(data) {
         console.log("thanks");
+        document.getElementById('connection_status').innerHTML = 'connected';
         game.init_map(data);
     });
 
+    Client.socket.on('newguy', function(data) {
+        console.log('newguy');
+        console.log(data);
+        game.add_player(data);
+    });
+
     Client.socket.on('allplayers', function(data) {
-        // console.log(data);
+        console.log('allplayers');
+        console.log(data);
+        game.players = data;
     });
 
     Client.socket.on('tick', function(data) {
         console.log('tick');
-        console.log(data);
+        // console.log(game.players);
         game.update_planets(data.tick);
         game.draw();
     });
 
     Client.socket.on('remove', function(id) {
-        game.removePlayer(id);
+        console.log(id);
+        game.remove_player(id);
     });
 
-    Client.sendClick = function(x, y) {
-        Client.socket.emit('click', {
-            x: x,
-            y: y
-        });
+    Client.socket.on('disconnect', function(reason) {
+        console.log('the server went away: ' + reason);
+        document.getElementById('connection_status').innerHTML = 'lost connection <a href="javascript:window.location.href=window.location.href">reload</a>';
+    });
+
+    Client.sendClick = function(p) {
+        Client.socket.emit('click', {planet: p});
     };
 
     // go
@@ -64,6 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <=
                             Math.pow(p.radius * 9, 2) // arbitrary 9 matches one in draw function
                         ) {
+                            Client.sendClick(p);
                             console.log('hit ' + p.name);
                         }
                     }

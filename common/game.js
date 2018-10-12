@@ -5,7 +5,7 @@
   var Game = function() {
     // https://en.wikipedia.org/wiki/TRAPPIST-1#Planetary_system
     this.planets = [
-      { name: "A", speed: 0, radius: 0.00000001 },
+      // { name: "A", speed: 0, radius: 0.00000001 },
       { name: "B", speed: 24, semimajor_axis: 0.01154775, radius: 1.121 },
       { name: "C", speed: 15, semimajor_axis: 0.01581512, radius: 1.095 },
       { name: "D", speed: 9, semimajor_axis: 0.02228038, radius: 0.784 },
@@ -14,6 +14,8 @@
       { name: "G", speed: 3, semimajor_axis: 0.04687692, radius: 1.148 },
       { name: "H", speed: 2, semimajor_axis: 0.06193488, radius: 0.773 }
     ];
+
+    this.players = [];
   };
 
   Game.prototype.create = function(){
@@ -22,6 +24,7 @@
 
   Game.prototype.init_map = function(data){
       console.log("init_map");
+      this.players = data.players;
 
       var canvas = document.getElementById('map1');
       canvas_side = 640;
@@ -79,6 +82,12 @@
               context.fillStyle = "gray";
               context.font = "14px Verdana";
               context.fillText(p.name, p.canvas_x, p.canvas_y);
+
+              // players
+              var player_count = this.players.filter(player => player.planet == p.name).length;
+              context.fillStyle = "yellow";
+              context.font = "12px Verdana";
+              context.fillText( player_count, p.canvas_x, p.canvas_y+12);
           }
 
           // tick
@@ -111,6 +120,20 @@
           }
           p.color = "blue";
       }
+  };
+
+  Game.prototype.add_player = function(player) {
+      console.log(player);
+      if (player) this.players.push(player);
+  };
+
+  Game.prototype.remove_player = function(id) {
+      this.players = this.players.filter( player => player.id != id );
+  };
+
+  Game.prototype.move_player_to_planet = function(player,planet) {
+      console.log(player);
+      console.log(planet);
   };
 
   Game.prototype.position_of_planet = function(p, tick_t) {
