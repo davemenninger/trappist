@@ -19,7 +19,7 @@
     this.num_positions = 576;
     var twopi = 2 * 3.1415;
     this.tick_angle = twopi / this.num_positions;
-    this.canvas_side = 640;
+    this.canvas_side = 800;
     this.radius_factor = (this.canvas_side / 2) * 16;
     this.cx = this.canvas_side / 2;
     this.cy = this.canvas_side / 2;
