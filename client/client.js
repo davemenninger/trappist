@@ -2,8 +2,10 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('start client');
 
     var game = new Game();
+    var me;
 
     var Client = {};
+
     Client.socket = io.connect();
 
     Client.askNewPlayer = function() {
@@ -14,12 +16,13 @@ document.addEventListener('DOMContentLoaded', function() {
     Client.socket.on('init_map', function(data) {
         console.log("thanks");
         document.getElementById('connection_status').innerHTML = 'connected';
+        console.log(data);
+        me = data.you;
         game.init_map(data);
     });
 
     Client.socket.on('newguy', function(data) {
         console.log('newguy');
-        console.log(data);
         game.add_player(data);
     });
 
@@ -31,12 +34,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     Client.socket.on('tick', function(data) {
         game.update_planets(data.tick);
-        game.draw();
+        game.draw(me);
     });
 
     Client.socket.on('move', function(data) {
-      console.log('move');
-      game.move_player_to_planet(data.player,data.planet);
+        console.log('move');
+        if (data.player.id == me.id) {
+            me = data.player;
+        }
+        game.move_player_to_planet(data.player, data.planet);
     });
 
     Client.socket.on('remove', function(id) {

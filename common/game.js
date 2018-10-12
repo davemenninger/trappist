@@ -41,10 +41,10 @@
       this.height = canvas.height = this.canvas_side;
       this.tick = data.tick;
       this.update_planets(data.tick);
-      this.draw();
+      this.draw(data.you);
   };
 
-  Game.prototype.draw = function() {
+  Game.prototype.draw = function(player) {
       var canvas = document.getElementById('map1');
       if (canvas.getContext) {
           var context = canvas.getContext("2d");
@@ -79,13 +79,23 @@
               context.arc(p.canvas_x, p.canvas_y, p.radius * 9, 0, Math.PI * 2, true);
               context.fill();
 
+              // you
+              if ( player.planet == p.name )
+              {
+                // planet ring
+                context.strokeStyle = "red";
+                context.beginPath();
+                context.arc(p.canvas_x, p.canvas_y, p.radius * 9, 0, Math.PI * 2, true);
+                context.stroke();
+              }
+
               // label
               context.fillStyle = "gray";
               context.font = "14px Verdana";
               context.fillText(p.name, p.canvas_x, p.canvas_y);
 
               // players
-              var player_count = this.players.filter(player => player.planet == p.name).length;
+              var player_count = this.players.filter(plyr => plyr.planet == p.name).length;
               context.fillStyle = "yellow";
               context.font = "12px Verdana";
               context.fillText( player_count, p.canvas_x, p.canvas_y+12);
@@ -95,6 +105,7 @@
           context.fillStyle = "gray";
           context.font = "14px Verdana";
           context.fillText(this.tick, 10, 20);
+          context.fillText("you are at: " + player.planet, 10, 34 );
       }
   };
 

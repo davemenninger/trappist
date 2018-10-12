@@ -37,7 +37,8 @@ io.on('connection', function(socket) {
         socket.emit('init_map', {
             tick: game.tick,
             planets: game.planets,
-            players: getAllPlayers()
+            players: getAllPlayers(),
+            you: socket.player
         });
         socket.broadcast.emit('newguy', socket.player);
 
