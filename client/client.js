@@ -30,10 +30,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     Client.socket.on('tick', function(data) {
-        console.log('tick');
-        // console.log(game.players);
         game.update_planets(data.tick);
         game.draw();
+    });
+
+    Client.socket.on('move', function(data) {
+      console.log('move');
+      game.move_player_to_planet(data.player,data.planet);
     });
 
     Client.socket.on('remove', function(id) {

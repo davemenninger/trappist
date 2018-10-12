@@ -33,8 +33,7 @@ io.on('connection', function(socket) {
             id: server.lastPlayerID++,
             planet: 'B',
         };
-        //socket.broadcast.emit('allplayers', getAllPlayers());
-        game.add_player({ player: socket.player });
+        game.add_player( socket.player );
         socket.emit('init_map', {
             tick: game.tick,
             planets: game.planets,
@@ -45,11 +44,11 @@ io.on('connection', function(socket) {
         socket.on('click', function(data) {
             console.log( socket.player.id );
             console.log('click to ' + data.planet.name);
-            game.move_player_to_planet({
-                player: socket.player,
-                planet: data.planet
-            });
-            io.emit('move', socket.player);
+            game.move_player_to_planet(
+                socket.player,
+                data.planet
+            );
+            io.emit('move', { player: socket.player, planet: data.planet });
         });
 
         socket.on('disconnect', function() {
@@ -75,6 +74,7 @@ setInterval(function() {
     second = Math.floor(Date.now() / 1000);
     tick = Math.floor( second / seconds_per_tick );
     console.log(tick);
+    game.update_planets(tick);
     io.sockets.emit('tick', {
         tick: tick
     });

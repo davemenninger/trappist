@@ -15,6 +15,16 @@
       { name: "H", speed: 2, semimajor_axis: 0.06193488, radius: 0.773 }
     ];
 
+    // geometry
+    this.num_positions = 576;
+    var twopi = 2 * 3.1415;
+    this.tick_angle = twopi / this.num_positions;
+    this.canvas_side = 640;
+    this.radius_factor = (this.canvas_side / 2) * 16;
+    this.cx = this.canvas_side / 2;
+    this.cy = this.canvas_side / 2;
+    this.jump_distance = this.canvas_side / 8;
+
     this.players = [];
   };
 
@@ -27,23 +37,14 @@
       this.players = data.players;
 
       var canvas = document.getElementById('map1');
-      canvas_side = 640;
-      this.width = canvas.width = canvas_side;
-      this.height = canvas.height = canvas_side;
+      this.width = canvas.width = this.canvas_side;
+      this.height = canvas.height = this.canvas_side;
       this.tick = data.tick;
-      this.num_positions = 576;
-      twopi = 2 * 3.1415;
-      this.cx = canvas.width / 2;
-      this.cy = canvas.height / 2;
-      this.tick_angle = twopi / this.num_positions;
-      this.radius_factor = (canvas.width / 2) * 16;
-      this.jump_distance = canvas_side / 8;
       this.update_planets(data.tick);
       this.draw();
   };
 
   Game.prototype.draw = function() {
-      console.log('draw');
       var canvas = document.getElementById('map1');
       if (canvas.getContext) {
           var context = canvas.getContext("2d");
@@ -131,9 +132,18 @@
       this.players = this.players.filter( player => player.id != id );
   };
 
-  Game.prototype.move_player_to_planet = function(player,planet) {
-      console.log(player);
-      console.log(planet);
+  Game.prototype.move_player_to_planet = function(player, planet) {
+      console.log("move");
+      p1 = this.planets.filter(plnt => plnt.name == player.planet)[0]; // lame
+      p2 = planet;
+      var d = this.distance(p1, p2);
+      if (d < this.jump_distance) {
+          console.log("jumpable!");
+          var i = this.players.findIndex(plyr => plyr.id == player.id);
+          this.players[i].planet = p2.name;
+      } else {
+          console.log("too far!");
+      }
   };
 
   Game.prototype.position_of_planet = function(p, tick_t) {
