@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
             me = data.player;
         }
         game.move_player_to_planet(data.player, data.planet);
+        game.draw(me);
     });
 
     Client.socket.on('remove', function(id) {
