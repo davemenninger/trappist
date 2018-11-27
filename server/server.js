@@ -22,7 +22,8 @@ var game = new Game();
 
 server.lastPlayerID = 0;
 
-server.listen(8081,function(){
+var port = process.env.PORT || 8081;
+server.listen(port,function(){
     console.log('Listening on '+ server.address().port );
 });
 
