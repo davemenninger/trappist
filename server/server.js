@@ -14,11 +14,11 @@ app.get('/',function(req,res){
     res.sendFile('index.html', { root: './client'});
 });
 
-var seconds_per_tick = 60;
 var second = Math.floor(Date.now() / 1000);
 var tick = Math.floor( second / seconds_per_tick );
 var Game = gamejs.Game;
 var game = new Game();
+var seconds_per_tick = game.seconds_per_tick;
 
 server.lastPlayerID = 0;
 
@@ -77,13 +77,16 @@ function randomInt(low,high){
 function serverTick(){
     second = Math.floor(Date.now() / 1000);
     tick = Math.floor( second / seconds_per_tick );
-    console.log(tick);
-    game.update_planets(tick);
-    io.sockets.emit('tick', {
-        tick: tick
-    });
+    if ( (second%seconds_per_tick) == 0 )
+    {
+        console.log(tick);
+        game.update_planets(tick);
+        io.sockets.emit('tick', {
+            tick: tick
+        });
+    }
 };
 
 setInterval(function() {
     serverTick();
-}, 1000 * seconds_per_tick);
+}, 1000 );

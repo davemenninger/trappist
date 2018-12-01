@@ -92,6 +92,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 },
                 false);
+
+            setInterval(function(){
+                game.draw(me);
+            }, 2000);
+
         }
     };
 });

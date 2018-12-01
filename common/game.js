@@ -25,6 +25,11 @@
     this.cy = this.canvas_side / 2;
     this.jump_distance = this.canvas_side / 8;
 
+    // time
+    this.seconds_per_tick = 60;
+    current_second = Math.floor(Date.now() / 1000);
+    this.tick = Math.floor( current_second / this.seconds_per_tick );
+
     this.players = [];
   };
 
@@ -102,10 +107,28 @@
           }
 
           // tick
+          margin = 5;
+          font_height = 14;
+          bar_width = canvas.width - ( margin*2);
+          current_second = Math.floor(Date.now() / 1000);
+          next_tick = this.tick + 1;
+          next_tick_second = next_tick * this.seconds_per_tick;
+          diff = next_tick_second - current_second;
+          percent_of_tick_remaining = (diff / this.seconds_per_tick);
+
+          // tick meter bar
+          context.beginPath();
+          context.strokeStyle="purple";
+          context.rect(margin,margin,bar_width,font_height+margin);
+          context.stroke();
+          context.fillStyle="purple";
+          context.fillRect(margin,margin,(bar_width*percent_of_tick_remaining),font_height+margin);
           context.fillStyle = "gray";
-          context.font = "14px Verdana";
-          context.fillText(this.tick, 10, 20);
-          context.fillText("you are at: " + player.planet, 10, 34 );
+          context.font = font_height+"px Verdana";
+          context.fillText(this.tick, margin*2, font_height+margin);
+          context.fillText("you are at: " + player.planet, margin*2, font_height*2+margin*2 );
+          context.fillText("next tick in " + diff + " seconds", margin*2, font_height*3+margin*3 );
+
       }
   };
 
