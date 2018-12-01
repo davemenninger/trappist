@@ -14,7 +14,7 @@ app.get('/',function(req,res){
     res.sendFile('index.html', { root: './client'});
 });
 
-var seconds_per_tick = 2;
+var seconds_per_tick = 60;
 var second = Math.floor(Date.now() / 1000);
 var tick = Math.floor( second / seconds_per_tick );
 var Game = gamejs.Game;
@@ -59,6 +59,8 @@ io.on('connection', function(socket) {
     });
 });
 
+serverTick();
+
 function getAllPlayers(){
     var players = [];
     Object.keys(io.sockets.connected).forEach(function(socketID){
@@ -72,7 +74,7 @@ function randomInt(low,high){
     return Math.floor(Math.random()*(high-low)+low);
 };
 
-setInterval(function() {
+function serverTick(){
     second = Math.floor(Date.now() / 1000);
     tick = Math.floor( second / seconds_per_tick );
     console.log(tick);
@@ -80,4 +82,8 @@ setInterval(function() {
     io.sockets.emit('tick', {
         tick: tick
     });
+};
+
+setInterval(function() {
+    serverTick();
 }, 1000 * seconds_per_tick);
